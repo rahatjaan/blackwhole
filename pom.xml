@@ -1,0 +1,177 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+	<modelVersion>4.0.0</modelVersion>
+
+	<groupId>com.codesaaz.product</groupId>
+	<artifactId>blackwhole</artifactId>
+	<packaging>pom</packaging>
+	<name>BlackWhole billing system</name>
+	<description>blackwhole billing system</description>
+	<version>0.0.1-SNAPSHOT</version>
+	<properties>
+		<spring.boot-version>2.0.0.RELEASE</spring.boot-version>
+		<!-- Spring Boot default profile in order to use an embedded database -->
+		<run.profiles>dev</run.profiles>
+		<!--<run.profiles>int</run.profiles>-->
+		<!--<run.profiles>prod</run.profiles>-->
+		<springfox-swagger2.version>2.5.0</springfox-swagger2.version>
+		<swagger.version>1.5.9</swagger.version>
+		<product.version>0.0.1-SNAPSHOT</product.version>
+	</properties>
+
+
+	<modules>
+		<module>messaging</module>
+		<module>workflows</module>
+		<module>search</module>
+		<module>caching</module>
+		<module>api-gateway</module>
+		<module>data-access</module>
+		<module>billing-events</module>
+		<module>content-repository</module>
+		<module>billing-core</module>
+		<module>packaging</module>
+		<module>application-startup</module>
+		<module>core-ui</module>
+		<module>security</module>
+
+
+	</modules>
+
+
+
+
+	<dependencyManagement>
+		<dependencies>
+			<dependency>
+				<groupId>org.springframework.boot</groupId>
+				<artifactId>spring-boot-dependencies</artifactId>
+				<version>${spring.boot-version}</version>
+				<type>pom</type>
+				<scope>import</scope>
+			</dependency>
+			<!-- We need to align the Hibernate versions -->
+			<dependency>
+				<groupId>org.hibernate</groupId>
+				<artifactId>hibernate-entitymanager</artifactId>
+				<version>5.0.9.Final</version>
+			</dependency>
+		</dependencies>
+	</dependencyManagement>
+	<dependencies>
+		<!-- Compile -->
+		<dependency>
+			<groupId>org.springframework.boot</groupId>
+			<artifactId>spring-boot-starter-activemq</artifactId>
+			<scope>compile</scope>
+		</dependency>
+		<!-- Test -->
+		<dependency>
+			<groupId>org.springframework.boot</groupId>
+			<artifactId>spring-boot-starter-test</artifactId>
+			<scope>test</scope>
+		</dependency>
+	</dependencies>
+	<build>
+		<plugins>
+			<!--<plugin>
+				<groupId>org.springframework.boot</groupId>
+				<artifactId>spring-boot-maven-plugin</artifactId>
+				<version>${spring.boot-version}</version>
+				<executions>
+					<execution>
+						<goals>
+							<goal>repackage</goal>
+						</goals>
+					</execution>
+				</executions>
+			</plugin>-->
+			<plugin>
+
+				<groupId>org.apache.maven.plugins</groupId>
+				<artifactId>maven-compiler-plugin</artifactId>
+				<version>3.2</version>
+				<configuration>
+					<source>1.8</source>
+					<target>1.8</target>
+					<meminitial>128m</meminitial>
+					<maxmem>512m</maxmem>
+					<verbose>false</verbose>
+					<compilerArgument>-J -Xss50M</compilerArgument>
+				</configuration>
+			</plugin>
+
+
+
+		</plugins>
+		<pluginManagement>
+
+			<plugins>
+				<plugin>
+					<groupId>org.projectlombok</groupId>
+					<artifactId>lombok-maven-plugin</artifactId>
+					<version>1.16.16.0</version>
+					<executions>
+						<execution>
+							<phase>generate-sources</phase>
+							<goals>
+								<goal>delombok</goal>
+							</goals>
+						</execution>
+					</executions>
+				</plugin>
+				<plugin>
+					<groupId>org.codehaus.mojo</groupId>
+					<artifactId>cobertura-maven-plugin</artifactId>
+					<version>2.7</version>
+					<configuration>
+						<formats>
+							<format>xml</format>
+						</formats>
+						<instrumentation>
+							<excludes>
+								<exclude>se/invigos/webapp/domain/Q*.class</exclude>
+							</excludes>
+						</instrumentation>
+					</configuration>
+				</plugin>
+				<plugin>
+					<groupId>org.springframework.boot</groupId>
+					<artifactId>spring-boot-maven-plugin</artifactId>
+					<version>${spring-boot.version}</version>
+					<configuration>
+						<addResources>true</addResources>
+					</configuration>
+				</plugin>
+				<plugin>
+					<groupId>org.apache.maven.plugins</groupId>
+					<artifactId>maven-war-plugin</artifactId>
+					<version>2.6</version>
+					<configuration>
+						<failOnMissingWebXml>false</failOnMissingWebXml>
+					</configuration>
+				</plugin>
+			</plugins>
+		</pluginManagement>
+	</build>
+
+	<profiles>
+		<profile>
+			<id>jdk9-build</id>
+			<activation>
+				<jdk>9</jdk>
+			</activation>
+			<build>
+				<plugins>
+					<plugin>
+						<artifactId>maven-surefire-plugin</artifactId>
+						<configuration>
+							<argLine>--add-modules java.xml.bind --add-opens java.base/java.lang=ALL-UNNAMED --add-opens java.base/java.lang.invoke=ALL-UNNAMED</argLine>
+						</configuration>
+					</plugin>
+				</plugins>
+			</build>
+		</profile>
+	</profiles>
+</project>
